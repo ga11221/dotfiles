@@ -137,7 +137,7 @@ export NVM_DIR="$HOME/.nvm"
 if ! pgrep -u "$USER" ssh-agent > /dev/null; then
     ssh-agent -s > ~/.ssh/agent.env
 fi
-. ~/.ssh/agent.env > /dev/null
+[[ -f ~/.ssh/agent.env ]] && . ~/.ssh/agent.env > /dev/null
 ssh-add ~/.ssh/id_ed25519 2>/dev/null
 
 mkdir -p ~/.cache/dirstack
