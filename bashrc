@@ -133,7 +133,6 @@ if ! { [[ -S "$SSH_AUTH_SOCK" ]] && ssh-add -l > /dev/null 2>&1; }; then
     fi
     if ! { [[ -S "$SSH_AUTH_SOCK" ]] && ssh-add -l > /dev/null 2>&1; }; then
         # Agent running but no valid socket — recreate env file
-        local sock pid
         sock=$(find /tmp -maxdepth 2 -path "*/agent.*" -user "$USER" 2>/dev/null | head -1)
         pid=$(pgrep -u "$USER" ssh-agent | head -1)
         if [[ -n "$sock" && -n "$pid" ]]; then
