@@ -133,6 +133,13 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+# SSH agent
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    ssh-agent -s > ~/.ssh/agent.env
+fi
+. ~/.ssh/agent.env > /dev/null
+ssh-add ~/.ssh/id_ed25519 2>/dev/null
+
 mkdir -p ~/.cache/dirstack
 trap 'dirs -l -p > ~/.cache/dirstack/$(basename $(tty)) 2>/dev/null' EXIT
 # uncomment to auto-restore dirstack
