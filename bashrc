@@ -86,6 +86,9 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
+# pushd shorthand (directory stack navigation)
+alias cdp='pushd'
+
 # Desktop notification for long-running commands
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
@@ -123,26 +126,12 @@ export NVM_DIR="$HOME/.nvm"
 
 # SSH agent ----------------------------------------------------------------
 
-# Start SSH agent if not running, reconnect if orphaned, then load key
+# Start a fresh agent if we don't have a working connection
 if ! { [[ -S "$SSH_AUTH_SOCK" ]] && ssh-add -l > /dev/null 2>&1; }; then
-    if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-        ssh-agent -s > ~/.ssh/agent.env
-    fi
-    if [[ -f ~/.ssh/agent.env ]]; then
-        . ~/.ssh/agent.env > /dev/null
-    fi
-    if ! { [[ -S "$SSH_AUTH_SOCK" ]] && ssh-add -l > /dev/null 2>&1; }; then
-        # Agent running but no valid socket — recreate env file
-        sock=$(find /tmp -maxdepth 2 -path "*/agent.*" -user "$USER" 2>/dev/null | head -1)
-        pid=$(pgrep -u "$USER" ssh-agent | head -1)
-        if [[ -n "$sock" && -n "$pid" ]]; then
-            cat > ~/.ssh/agent.env <<EOF
-SSH_AUTH_SOCK=$sock; export SSH_AUTH_SOCK;
-SSH_AGENT_PID=$pid; export SSH_AGENT_PID;
-EOF
-            . ~/.ssh/agent.env > /dev/null
-        fi
-    fi
+    pkill -u "$USER" ssh-agent 2>/dev/null
+    rm -f ~/.ssh/agent.env
+    ssh-agent -s > ~/.ssh/agent.env
+    . ~/.ssh/agent.env > /dev/null
 fi
 ssh-add ~/.ssh/id_ed25519 2>/dev/null
 
