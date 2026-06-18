@@ -1,0 +1,10 @@
+[include]
+	path = ~/.gitconfig.local
+
+[fetch]
+	writeCommitGraph = true
+	parallel = 4
+[gc]
+	writeCommitGraph = true
+[protocol]
+	version = 2
