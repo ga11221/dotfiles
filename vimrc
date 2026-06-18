@@ -29,6 +29,10 @@ set undodir=~/.vim/undo
 " Line numbers
 set number
 
+" New splits open below/right instead of above/left
+set splitbelow
+set splitright
+
 " Filetype detection, plugins, and indentation
 filetype plugin indent on
 
