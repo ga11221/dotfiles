@@ -123,11 +123,28 @@ export NVM_DIR="$HOME/.nvm"
 
 # SSH agent ----------------------------------------------------------------
 
-# Start agent if not running, then load key
-if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-    ssh-agent -s > ~/.ssh/agent.env
+# Start SSH agent if not running, reconnect if orphaned, then load key
+if ! { [[ -S "$SSH_AUTH_SOCK" ]] && ssh-add -l > /dev/null 2>&1; }; then
+    if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+        ssh-agent -s > ~/.ssh/agent.env
+    fi
+    if [[ -f ~/.ssh/agent.env ]]; then
+        . ~/.ssh/agent.env > /dev/null
+    fi
+    if ! { [[ -S "$SSH_AUTH_SOCK" ]] && ssh-add -l > /dev/null 2>&1; }; then
+        # Agent running but no valid socket — recreate env file
+        local sock pid
+        sock=$(find /tmp -maxdepth 2 -path "*/agent.*" -user "$USER" 2>/dev/null | head -1)
+        pid=$(pgrep -u "$USER" ssh-agent | head -1)
+        if [[ -n "$sock" && -n "$pid" ]]; then
+            cat > ~/.ssh/agent.env <<EOF
+SSH_AUTH_SOCK=$sock; export SSH_AUTH_SOCK;
+SSH_AGENT_PID=$pid; export SSH_AGENT_PID;
+EOF
+            . ~/.ssh/agent.env > /dev/null
+        fi
+    fi
 fi
-[[ -f ~/.ssh/agent.env ]] && . ~/.ssh/agent.env > /dev/null
 ssh-add ~/.ssh/id_ed25519 2>/dev/null
 
 # Directory stack persistence -----------------------------------------------
