@@ -93,6 +93,7 @@ imap <C-;> <Cmd>call copilot#Suggest()<CR>
 
 " Auto-save ----------------------------------------------------------------
 
-" Save buffer 5s after last change
+" Save buffer 5s after last change, or immediately on focus loss
 set updatetime=5000
 autocmd CursorHold,CursorHoldI * update
+autocmd FocusLost * update
