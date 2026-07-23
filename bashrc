@@ -11,6 +11,12 @@ esac
 # Ignore duplicates and lines starting with space
 HISTCONTROL=ignoreboth
 
+# Clear clipboard after 10 seconds (pass -c)
+export CLIP_TIME=10
+if [ "${CLIP_TIME:-0}" != 10 ]; then
+  echo -e "\033[1;31m⚠ WARNING: CLIP_TIME=${CLIP_TIME} (expected 10)\033[0m" >&2
+fi
+
 # Append to history file instead of overwriting
 shopt -s histappend
 
@@ -129,3 +135,5 @@ mkdir -p ~/.cache/dirstack
 trap 'dirs -l -p > ~/.cache/dirstack/$(basename $(tty)) 2>/dev/null' EXIT
 # Uncomment to auto-restore dirstack on login:
 #[[ -f ~/.cache/dirstack/$(basename $(tty)) ]] && mapfile -t _stack < ~/.cache/dirstack/$(basename $(tty)) && { for (( _i=${#_stack[@]}-1; _i>=0; _i-- )); do pushd -n "${_stack[_i]}" >/dev/null 2>&1; done; unset _i _stack; }
+[ -f ~/.ghcup/env ] && source ~/.ghcup/env
+export GPG_TTY=$(tty)

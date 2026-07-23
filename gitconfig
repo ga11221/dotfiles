@@ -8,3 +8,11 @@
 	writeCommitGraph = true
 [protocol]
 	version = 2
+[http "https://github.com"]
+	extraHeader = Accept: application/vnd.github.v3+json
+[credential "https://github.com"]
+	helper = 
+	helper = !/home/georg/go/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/home/georg/go/bin/gh auth git-credential
